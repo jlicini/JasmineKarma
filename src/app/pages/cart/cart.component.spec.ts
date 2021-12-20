@@ -35,6 +35,7 @@ describe('cart component', () => {
    */
   let component: CartComponent;
   let fixture: ComponentFixture<CartComponent>;
+  let service: BookService;
 
   //se llama antes de ejecutar cada test
   beforeEach(() => {
@@ -51,6 +52,7 @@ describe('cart component', () => {
     fixture = TestBed.createComponent(CartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges(); //el component entra por el ngOnInit()
+    service = fixture.debugElement.injector.get(BookService)
   });
 
   //comprobar que el componente se ha creado correctamente
@@ -66,9 +68,62 @@ describe('cart component', () => {
     expect(totalPrice).not.toBeNull(0);
   });
 
+  // los test no se lanzan en paralelo. Por esto el libro lo instancio dentro la prueba y no afuera
+
   it('onInputNumberChange increments correctly', ()=>{
     const action = 'plus';
-    const book = listBook[0];
-    // spyOn estan atento a que ese metedo se haya llamado
+    const book = {
+      name: '',
+      author: '',
+      isbn: '',
+      price: 15,
+      amount: 2,
+    };
+    /**
+     * tenemos que llamar el servicio de _bookService
+     * para accedere hay diferentes formas
+     * // const service = (component as any)._bookService;
+     * // const service = component["_bookService"];
+     * las dos no son buenas formas porque puedes generar errores, la primera encoma no da metodos y no respecta tipos
+     */
+
+    // spyOn esta atento a que ese metedo se haya llamado, hay que crearlo antes de llamar e metodo
+    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(()=>null);
+    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(()=>null);
+
+    expect(book.amount).toBe(2)
+
+    component.onInputNumberChange(action, book);
+
+    //hay muchas formas para hacer el expect
+    expect(book.amount).toBe(3)
+    expect(book.amount === 3).toBeTrue()
+
+    // es parte del test mirar que los metodos se hayan llamado coorectamnte
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  })
+
+  it('onInputNumberChange decrements correctly', ()=>{
+    const action = 'minus';
+    const book = {
+      name: '',
+      author: '',
+      isbn: '',
+      price: 15,
+      amount: 2,
+    };
+
+    const spy1 = spyOn(service, 'updateAmountBook').and.callFake(()=>null);
+    const spy2 = spyOn(component, 'getTotalPrice').and.callFake(()=>null);
+
+    expect(book.amount).toBe(2)
+
+    component.onInputNumberChange(action, book);
+
+    expect(book.amount).toBe(1)
+
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
   })
 });
