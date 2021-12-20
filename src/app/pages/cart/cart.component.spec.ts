@@ -52,7 +52,7 @@ describe('cart component', () => {
     fixture = TestBed.createComponent(CartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges(); //el component entra por el ngOnInit()
-    service = fixture.debugElement.injector.get(BookService)
+    service = TestBed.inject(BookService)
   });
 
   //comprobar que el componente se ha creado correctamente
@@ -125,5 +125,29 @@ describe('cart component', () => {
 
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
+  });
+
+  // probar un metodo privado, desde un publico se testea el privado
+  // si no se puede desde el publico llamar el privado no esta bien
+  it('onClearBooks works correctly', () =>{
+    //callThrough para ejecutarlo
+    const spy1 = spyOn((component as any), '_clearListCartBook').and.callThrough();
+    const spy2 = spyOn(service, 'removeBooksFromCart').and.callFake(()=> null);
+    component.listCartBook = listBook;
+    component.onClearBooks();
+    // nos esperemos 0 porque estamos llamando a un metodo privado que nos vacia la lista, ya uqe la misma es > 0
+    // nos hace falta poner los dos expect, uno esta bien
+    expect(component.listCartBook.length).toBe(0)
+    expect(component.listCartBook.length === 0).toBeTrue();
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  })
+
+  // o hago este test o el de arriba mejor onClearBooks y testear alli el privado
+  it('_clearListCartBook works correctly', ()=>{
+    const spy1 = spyOn(service, 'removeBooksFromCart').and.callFake(()=>null);
+    component["_clearListCartBook"]();
+    expect(component.listCartBook.length).toBe(0)
+    expect(spy1).toHaveBeenCalled();
   })
 });
