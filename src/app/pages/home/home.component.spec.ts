@@ -31,6 +31,10 @@ const listBook: Book[] = [
   },
 ];
 
+const bookServiceMock = {
+  getBooks: () => of(listBook)
+}
+
 describe('Home component', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
@@ -39,7 +43,13 @@ describe('Home component', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [HomeComponent],
-      providers: [BookService],
+      providers: [
+        // BookService,
+        {
+          provide: BookService,
+          useValue: bookServiceMock
+        }
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
@@ -67,13 +77,22 @@ describe('Home component', () => {
     expect(component.listBook.length).toBe(0)
   })
 
-  it('getBooks get more than 0 books from the subscription', ()=>{
+  // no mock
+  // it('getBooks get more than 0 books from the subscription', ()=>{
+  //   const bookservice = TestBed.inject(BookService)
+  //   const spy1 = spyOn(bookservice, 'getBooks').and.returnValue(of(listBook));
+  //   component.getBooks();
+  //   expect(spy1).toHaveBeenCalled();
+  //   expect(component.listBook.length).toBe(3);
+  //   expect(component.listBook.length).toBeGreaterThan(0);
+  // })
+
+  // with mock
+  it('getBooks', ()=>{
     const bookservice = TestBed.inject(BookService)
-    const spy1 = spyOn(bookservice, 'getBooks').and.returnValue(of(listBook));
     component.getBooks();
-    expect(spy1).toHaveBeenCalled();
     expect(component.listBook.length).toBe(3);
-    expect(component.listBook.length).toBeGreaterThan(0);
   })
+
 
 });
