@@ -60,6 +60,19 @@ describe('Home component', () => {
     fixture.detectChanges();
   });
 
+  beforeAll(() => {
+    // se ejecuta una sola vez al principio de tofo
+  });
+
+  afterEach(()=>{
+    // se ejecuta al final de cada test
+  })
+
+  afterAll(() => {
+    // se ejecuta despues de todos los test
+  });
+
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
