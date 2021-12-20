@@ -53,6 +53,7 @@ describe('cart component', () => {
     component = fixture.componentInstance;
     fixture.detectChanges(); //el component entra por el ngOnInit()
     service = TestBed.inject(BookService)
+    spyOn(service, 'getBooksFromCart').and.callFake(()=>listBook) // el oninit no esta llamando al servicio
   });
 
   //comprobar que el componente se ha creado correctamente
